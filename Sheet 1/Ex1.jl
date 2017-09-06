@@ -1,21 +1,3 @@
-bits(Int16(12607))
-ns = map(s -> parse(Int8, s), collect(reverse(bits(12607))))
-
-mapreduce((i, ni) -> 0.1*(i-3.5) * ni, +, enumerate(ns))
-
-E = 0
-for (i, ni) in enumerate(ns)
-    E += 0.1*(i-3.5) * ni
-end
-
-E
-
-
-
-#############
-### Below this
-############
-
 function HamiltonMatrix(N)
     # E_i
     E(i) = 0.1 * (i - 3.5)
@@ -36,25 +18,34 @@ function HamiltonMatrix(N)
     H
 end
 
-H = HamiltonMatrix(10)
+
+# Generate (sparse) Hamilton Matrix
+N = 6
+H = HamiltonMatrix(N)
+
+# Array view
+Es = map(i -> H[i, i], 1:2^N)
 
 
-# Other crap
 
-H[64, 64]
-minimum(H)
-
+# Plots
 using PyPlot
-N = 10
-plot(0:2^N-1, map(i -> H[i, i], 1:2^N))
-plot(0:2^N-1, sort(map(i -> H[i, i], 1:2^N)))
-ylabel("E")
-xlabel("Zustand")
 
+begin
+    plot(0:2^N-1, Es, "b.-")
+    xlabel("State as Integer")
+    ylabel("Energy")
+end
 
+begin
+    # This is sorted by energy
+    plot(0:2^N-1, sort(Es), "g.-")
+    xlabel("just a mess")
+    ylabel("Energy")
+end
 
-map(i -> H[i, i], 1:2^N)
-
-
-imshow(H)
-colorbar()
+begin
+    # Matrix represented as image
+    imshow(H)
+    colorbar()
+end
